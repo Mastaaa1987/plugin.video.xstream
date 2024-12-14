@@ -1,2 +1,2 @@
 # plugin.video.xstream
-decoded version of kodi plugin.video.xstream
+aktuelle version of plugin.video.xstream decoded ...
