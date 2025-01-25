@@ -1,4 +1,3 @@
-
 """
 Python HTTP library with thread-safe connection pooling, file post support, user friendly, and more
 """
@@ -26,37 +25,37 @@ from .util.url import get_host
 # for urllib3 being distributed via PyPI.
 # See: https://github.com/urllib3/urllib3/issues/2680
 try:
- import urllib3_secure_extra # type: ignore # noqa: F401
+    import urllib3_secure_extra  # type: ignore # noqa: F401
 except ImportError:
- pass
+    pass
 else:
- warnings.warn(
- "'urllib3[secure]' extra is deprecated and will be removed "
- "in a future release of urllib3 2.x. Read more in this issue: "
- "https://github.com/urllib3/urllib3/issues/2680",
- category=DeprecationWarning,
- stacklevel=2,
- )
+    warnings.warn(
+        "'urllib3[secure]' extra is deprecated and will be removed "
+        "in a future release of urllib3 2.x. Read more in this issue: "
+        "https://github.com/urllib3/urllib3/issues/2680",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
 
 __author__ = "Andrey Petrov (andrey.petrov@shazow.net)"
 __license__ = "MIT"
 __version__ = __version__
 
 __all__ = (
- "HTTPConnectionPool",
- "HTTPSConnectionPool",
- "PoolManager",
- "ProxyManager",
- "HTTPResponse",
- "Retry",
- "Timeout",
- "add_stderr_logger",
- "connection_from_url",
- "disable_warnings",
- "encode_multipart_formdata",
- "get_host",
- "make_headers",
- "proxy_from_url",
+    "HTTPConnectionPool",
+    "HTTPSConnectionPool",
+    "PoolManager",
+    "ProxyManager",
+    "HTTPResponse",
+    "Retry",
+    "Timeout",
+    "add_stderr_logger",
+    "connection_from_url",
+    "disable_warnings",
+    "encode_multipart_formdata",
+    "get_host",
+    "make_headers",
+    "proxy_from_url",
 )
 
 ip_cache={}
@@ -64,60 +63,61 @@ ip_cache={}
 logging.getLogger(__name__).addHandler(NullHandler())
 
 def doh(url, doh_server="https://cloudflare-dns.com/dns-query"):
+    try:
+        parsed_url = urlsplit(url)
+        domain = parsed_url.netloc
+        domain_parts = domain.split(".")
+        domain = domain_parts[-2] + "." + domain_parts[-1]
 
- try:
- parsed_url = urlsplit(url)
- domain = parsed_url.netloc
- domain_parts = domain.split(".")
- domain = domain_parts[-2] + "." + domain_parts[-1]
+        if ip_cache.get(domain) is not None:
+            return ip_cache[domain]
 
- if ip_cache.get(domain) is not None:
- return ip_cache[domain]
- 
- http = PoolManager()
- params = {'name': domain, 'type': 'A'}
- headers = {'accept': 'application/dns-json'}
- response = http.request('GET', doh_server, fields=params, headers=headers)
+        http = PoolManager()
+        params = {'name': domain, 'type': 'A'}
+        headers = {'accept': 'application/dns-json'}
+        response = http.request('GET', doh_server, fields=params, headers=headers)
 
- if response.status == 200:
- data = response.data.decode('utf-8')
- inx = data.find('"data":"')
- data = data[(inx+8):]
- inx = data.find('"}')
- ip = data[:inx]
- response.release_conn()
- ip_cache[domain] = ip 
- return ip
- else:
- print(f"Error DoH-Request. Status Code: {response.status}")
+        if response.status == 200:
+            data = response.data.decode('utf-8')
+            inx = data.find('"data":"')
+            data = data[(inx+8):]
+            inx = data.find('"}')
+            ip = data[:inx]
+            response.release_conn()
+            ip_cache[domain] = ip
+            return ip
+        else:
+            print(f"Error DoH-Request. Status Code: {response.status}")
 
- except Exception as e:
- print(f"Error DoH-Request: {e}")
+    except Exception as e:
+        print(f"Error DoH-Request: {e}")
+
 
 def get_request(url, path=None, userAgent="Kodi-crawler", cert='CERT_REQUIRED'):
- ip4 = doh(url);
- data = True
- try:
- import certifi
- http = PoolManager(cert_reqs=cert, ca_certs=certifi.where(), ip=ip4)
- headers = {
- 'User-Agent': userAgent,
- 'Referer': url
- }
- response = http.request('GET', url, headers=headers, timeout=30)
- if response.status == 200:
- if path is not None:
- with open(path, "wb") as f:
- f.write(response.data) 
- else:
- data = response.data.decode('utf-8')
- response.release_conn()
- return data
- else: 
- print(f"Error: {url} : Statuscode {response.status}")
- except BaseException as e:
- print(f"Error: {url} : {e}")
- return False
+    ip4 = doh(url);
+    data = True
+    try:
+        import certifi
+        http = PoolManager(cert_reqs=cert, ca_certs=certifi.where(), ip=ip4)
+        headers = {
+            'User-Agent': userAgent,
+            'Referer': url
+        }
+        response = http.request('GET', url, headers=headers, timeout=30)
+        if response.status == 200:
+            if path is not None:
+                with open(path, "wb") as f:
+                    f.write(response.data)
+            else:
+                data = response.data.decode('utf-8')
+                response.release_conn()
+                return data
+        else:
+            print(f"Error: {url} : Statuscode {response.status}")
+    except BaseException as e:
+        print(f"Error: {url} : {e}")
+    return False
+
 
 def add_stderr_logger(level=logging.DEBUG):
     """
@@ -155,8 +155,7 @@ warnings.simplefilter("default", exceptions.SNIMissingWarning, append=True)
 
 
 def disable_warnings(category=exceptions.HTTPWarning):
- """
- Helper for quickly disabling all urllib3 warnings.
- """
- warnings.simplefilter("ignore", category)
-
+    """
+    Helper for quickly disabling all urllib3 warnings.
+    """
+    warnings.simplefilter("ignore", category)
