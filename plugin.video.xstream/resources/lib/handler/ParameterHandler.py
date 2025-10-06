@@ -13,7 +13,7 @@ class ParameterHandler:
             params = dict(parse_qsl(urlsplit(sys.argv[2]).query))
         self.__params = params
 
-    def getAll(self):
+    def getAllParameters(self):
         # returns all parameters as dictionary
         return self.__params
 

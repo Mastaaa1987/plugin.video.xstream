@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 # Python 3
+
 # Always pay attention to the translations in the menu!
-# Sprachauswahl f\xc3\x83\xc2\xbcr Hoster enthalten.
+# Sprachauswahl für Hoster enthalten.
 # Ajax Suchfunktion enthalten.
-# HTML LangzeitCache hinzugef\xc3\x83\xc2\xbcgt
-# showValue: 24 Stunden
+# HTML LangzeitCache hinzugefügt
+# showValue:     24 Stunden
 # showAllSeries: 24 Stunden
-# showEpisodes: 4 Stunden
-# SSsearch: 24 Stunden
- 
-# 2022-12-06 Heptamer - Suchfunktion \xc3\x83\xc2\xbcberarbeitet
+# showEpisodes:   4 Stunden
+# SSsearch:      24 Stunden
+    
+# 2022-12-06 Heptamer - Suchfunktion überarbeitet
 
 import xbmcgui
-import xbmcaddon
 
 from resources.lib.handler.ParameterHandler import ParameterHandler
 from resources.lib.handler.requestHandler import cRequestHandler
-from resources.lib.tools import logger, cParser, validater
+from resources.lib.tools import logger, cParser, cUtil
 from resources.lib.gui.guiElement import cGuiElement
 from resources.lib.config import cConfig
 from resources.lib.gui.gui import cGui
@@ -27,16 +27,16 @@ SITE_ICON = 'serienstream.png'
 
 # Global search function is thus deactivated!
 if cConfig().getSetting('global_search_' + SITE_IDENTIFIER) == 'false':
- SITE_GLOBAL_SEARCH = False
- logger.info('-> [SitePlugin]: globalSearch for %s is deactivated.' % SITE_NAME)
+    SITE_GLOBAL_SEARCH = False
+    logger.info('-> [SitePlugin]: globalSearch for %s is deactivated.' % SITE_NAME)
 
 # Domain Abfrage
-DOMAIN = cConfig().getSetting('plugin_' + SITE_IDENTIFIER + '.domain') # Domain Auswahl \xc3\x83\xc2\xbcber die xStream Einstellungen m\xc3\x83\xc2\xb6glich
+DOMAIN = cConfig().getSetting('plugin_' + SITE_IDENTIFIER + '.domain') # Domain Auswahl über die xStream Einstellungen möglich
 STATUS = cConfig().getSetting('plugin_' + SITE_IDENTIFIER + '_status') # Status Code Abfrage der Domain
 ACTIVE = cConfig().getSetting('plugin_' + SITE_IDENTIFIER) # Ob Plugin aktiviert ist oder nicht
 
 # URL_MAIN = 'https://s.to/'
-if DOMAIN == '186.2.175.5': # Bei Proxy \xc3\x83\xe2\x80\x9enderung nur IP hier in den Settings und in Zeile 53 tauschen.
+if DOMAIN == '186.2.175.5': # Bei Proxy Änderung nur IP hier in den Settings und in Zeile 53 tauschen.
     URL_MAIN = 'http://' + DOMAIN
     REFERER = 'http://' + DOMAIN
     proxy = 'true'
@@ -52,12 +52,9 @@ URL_LOGIN = URL_MAIN + '/login'
 
 # Wenn DNS Bypass aktiv nutze Proxy Server
 if cConfig().getSetting('bypassDNSlock') == 'true':
-    xbmcaddon.Addon().setSetting('plugin_' + SITE_IDENTIFIER + '.domain', '186.2.175.5')
+    cConfig().setSetting('plugin_' + SITE_IDENTIFIER + '.domain', '186.2.175.5')
 
-try:
-    validater()
-except:
-    sys.exit()
+#
 
 def load(): # Menu structure of the site plugin
     logger.info('Load %s' % SITE_NAME)
@@ -87,7 +84,6 @@ def load(): # Menu structure of the site plugin
 def showValue():
     params = ParameterHandler()
     sUrl = params.getValue('sUrl')
-    #sHtmlContent = cRequestHandler(sUrl).request()
     oRequest = cRequestHandler(sUrl)
     if cConfig().getSetting('global_search_' + SITE_IDENTIFIER) == 'true':
         oRequest.cacheTime = 60 * 60 * 24 # HTML Cache Zeit 1 Tag
@@ -110,7 +106,6 @@ def showAllSeries(entryUrl=False, sGui=False, sSearchText=False):
     oGui = sGui if sGui else cGui()
     params = ParameterHandler()
     if not entryUrl: entryUrl = params.getValue('sUrl')
-    #sHtmlContent = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False)).request()
     oRequest = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False))
     if cConfig().getSetting('global_search_' + SITE_IDENTIFIER) == 'true':
         oRequest.cacheTime = 60 * 60 * 24 # HTML Cache Zeit 1 Tag
@@ -123,7 +118,7 @@ def showAllSeries(entryUrl=False, sGui=False, sSearchText=False):
 
     total = len(aResult)
     for sUrl, sName in aResult:
-        if sSearchText and not cParser().search(sSearchText, sName):
+        if sSearchText and not cParser.search(sSearchText, sName):
             continue
         oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showSeasons')
         oGuiElement.setMediaType('tvshow')
@@ -135,13 +130,14 @@ def showAllSeries(entryUrl=False, sGui=False, sSearchText=False):
         oGui.setEndOfDirectory()
 
 
-
 def showNewEpisodes(entryUrl=False, sGui=False):
     oGui = sGui if sGui else cGui()
     params = ParameterHandler()
     if not entryUrl:
         entryUrl = params.getValue('sUrl')
     oRequest = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False))
+    if cConfig().getSetting('global_search_' + SITE_IDENTIFIER) == 'true':
+        oRequest.cacheTime = 60 * 60 * 4 # HTML Cache Zeit 4 Stunden
     sHtmlContent = oRequest.request()
     pattern = '<div[^>]*class="col-md-[^"]*"[^>]*>\s*<a[^>]*href="([^"]*)"[^>]*>\s*<strong>([^<]+)</strong>\s*<span[^>]*>([^<]+)</span>'
     isMatch, aResult = cParser.parse(sHtmlContent, pattern)
@@ -171,26 +167,26 @@ def showEntries(entryUrl=False, sGui=False):
         entryUrl = params.getValue('sUrl')
     oRequest = cRequestHandler(entryUrl, ignoreErrors=(sGui is not False))
     if cConfig().getSetting('global_search_' + SITE_IDENTIFIER) == 'true':
-        oRequest.cacheTime = 60 * 60 * 6  # 6 Stunden
+        oRequest.cacheTime = 60 * 60 * 6 # HTML Cache Zeit 6 Stunden
     sHtmlContent = oRequest.request()
     #Aufbau pattern
-    #'<div[^>]*class="col-md-[^"]*"[^>]*>.*?' # start element
-    #'<a[^>]*href="([^"]*)"[^>]*>.*?' # url
-    #'data-src="([^"]*).*?' # thumbnail
-    #'<h3>(.*?)<span[^>]*class="paragraph-end">.*?' # title
-    #'<\\/div>' # end element
-    pattern = '<div[^>]*class="col-md-[^"]*"[^>]*>.*?<a[^>]*href="([^"]*)"[^>]*>.*?data-src="([^"]*).*?<h3>(.*?)<span[^>]*class="paragraph-end">.*?<\\/div>'
+    #'<div[^>]*class="col-md-[^"]*"[^>]*>.*?'  # start element
+    #'<a[^>]*href="([^"]*)"[^>]*>.*?'  # url
+    #'data-src="([^"]*).*?'  # thumbnail
+    #'<h3>(.*?)<span[^>]*class="paragraph-end">.*?'  # title
+    #'<\\/div>'  # end element
+    pattern = '<div[^>]*class="col-md-[^"]*"[^>]*>.*?<a[^>]*href="([^"]*)"[^>]*>.*?data-src="([^"]*).*?<h3>(.*?)<span[^>]*class="paragraph-end">.*?</div>'
     isMatch, aResult = cParser.parse(sHtmlContent, pattern)
     if not isMatch:
         if not sGui: oGui.showInfo()
         return
 
-
     total = len(aResult)
     for sUrl, sThumbnail, sName in aResult:
-        #sThumbnail = URL_MAIN + sThumbnail
+        if sThumbnail.startswith('/'):
+            sThumbnail = URL_MAIN + sThumbnail
         oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showSeasons')
-        oGuiElement.setThumbnail(URL_MAIN + sThumbnail)
+        oGuiElement.setThumbnail(sThumbnail)
         oGuiElement.setMediaType('tvshow')
         params.setParam('sUrl', URL_MAIN + sUrl)
         params.setParam('TVShowTitle', sName)
@@ -214,7 +210,7 @@ def showSeasons():
     pattern = '<div[^>]*class="hosterSiteDirectNav"[^>]*>.*?<ul>(.*?)<\\/ul>'
     isMatch, sContainer = cParser.parseSingleResult(sHtmlContent, pattern)
     if isMatch:
-        pattern = '<a[^>]*href="([^"]*)"[^>]*title="([^"]*)"[^>]*>(.*?)<\\/a>.*?'
+        pattern = '<a[^>]*href="([^"]*)"[^>]*title="([^"]*)"[^>]*>(.*?)</a>.*?'
         isMatch, aResult = cParser.parse(sContainer, pattern)
     if not isMatch:
         cGui().showInfo()
@@ -229,6 +225,8 @@ def showSeasons():
     total = len(aResult)
     for sUrl, sName, sNr in aResult:
         isMovie = sUrl.endswith('filme')
+        if 'Alle Filme' in sName:
+            sName = 'Filme'
         oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showEpisodes')
         oGuiElement.setMediaType('season' if not isMovie else 'movie')
         if isThumbnail:
@@ -259,11 +257,18 @@ def showEpisodes():
     if cConfig().getSetting('global_search_' + SITE_IDENTIFIER) == 'true':
         oRequest.cacheTime = 60 * 60 * 4  # HTML Cache Zeit 4 Stunden
     sHtmlContent = oRequest.request()
-    pattern = '<table[^>]*class="seasonEpisodesList"[^>]*>(.*?)<\\/table>'
+    pattern = '<table[^>]*class="seasonEpisodesList"[^>]*>(.*?)</table>'
     isMatch, sContainer = cParser.parseSingleResult(sHtmlContent, pattern)
     if isMatch:
-        pattern = '<tr[^>]*data-episode-season-id="(\d+).*?<a href="([^"]+).*?(?:<strong>(.*?)</strong>.*?)?(?:<span>(.*?)</span>.*?)?<'
-        isMatch, aResult = cParser.parse(sContainer, pattern)
+        if isMovieList == True:
+            pattern = '<tr[^>]*data-episode-season-id="(\d+).*?<a href="([^"]+)">\s([^<]+).*?<strong>([^<]+)'
+            isMatch, aResult = cParser.parse(sContainer, pattern)
+            if not isMatch:
+                pattern = '<tr[^>]*data-episode-season-id="(\d+).*?<a href="([^"]+)">\s([^<]+).*?<span>([^<]+)'
+                isMatch, aResult = cParser.parse(sContainer, pattern)
+        else:
+            pattern = '<tr[^>]*data-episode-season-id="(\d+).*?<a href="([^"]+).*?(?:<strong>(.*?)</strong>.*?)?(?:<span>(.*?)</span>.*?)?<'
+            isMatch, aResult = cParser.parse(sContainer, pattern)
     if not isMatch:
         cGui().showInfo()
         return
@@ -272,7 +277,10 @@ def showEpisodes():
     total = len(aResult)
     for sID, sUrl2, sNameGer, sNameEng in aResult:
         sName = '%d - ' % int(sID)
-        sName += sNameGer if sNameGer else sNameEng
+        if isMovieList == True:
+            sName += sNameGer + '- ' + sNameEng
+        else:
+            sName += sNameGer if sNameGer else sNameEng
         oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showHosters')
         oGuiElement.setMediaType('episode' if not isMovieList else 'movie')
         oGuiElement.setThumbnail(sThumbnail)
@@ -292,55 +300,54 @@ def showEpisodes():
 def showHosters():
     hosters = []
     sUrl = ParameterHandler().getValue('sUrl')
-    sHtmlContent = cRequestHandler(sUrl).request()
-    if cConfig().getSetting('plugin_' + SITE_IDENTIFIER + '.domain') == 'serienstream.info':
+    sHtmlContent = cRequestHandler(sUrl, caching=False).request()
+    if cConfig().getSetting('plugin_' + SITE_IDENTIFIER + '.domain') == 'serienstream.stream':
         pattern = '<li[^>]*episodeLink([^"]+)"\sdata-lang-key="([^"]+).*?data-link-target=([^"]+).*?<h4>([^<]+)<([^>]+)'
+        pattern2 = 'itemprop="keywords".content=".*?Season...([^"]+).S.*?'  # HD Kennzeichen
         # data-lang-key="1" Deutsch
-        # data-lang-key="2" Japanisch mit englischen Untertitel
-        # data-lang-key="3" Japanisch mit deutschen Untertitel
+        # data-lang-key="2" Englisch
+        # data-lang-key="3" Englisch mit deutschen Untertitel
         isMatch, aResult = cParser.parse(sHtmlContent, pattern)
+        aResult2 = cParser.parse(sHtmlContent, pattern2)  # pattern 2 auslesen
         if isMatch:
-            for sID, sLangCode, sUrl, sName, sQualy in aResult:
-                # Die Funktion gibt 2 werte zur\xc3\x83\xc2\xbcck!
-                # element 1 aus array "[0]" True bzw. False
-                # element 2 aus array "[1]" Name von domain / hoster - wird hier nicht gebraucht!
+            for sID, sLang, sUrl, sName, sQuality in aResult:
                 sUrl = sUrl.replace(sUrl, '')
                 sUrl = sUrl.replace('', '/redirect/' + sID)
-                if cConfig().isBlockedHoster(sName)[0]: continue # Hoster aus settings.xml oder deaktivierten Resolver ausschlieÃŸen
+                if cConfig().isBlockedHoster(sName)[0]: continue # Hoster aus settings.xml oder deaktivierten Resolver ausschließen
                 sLanguage = cConfig().getSetting('prefLanguage')
                 if sLanguage == '1':        # Voreingestellte Sprache Deutsch in settings.xml
-                    if '2' in sLangCode:    # data-lang-key="2"
+                    if '2' in sLang:        # data-lang-key="2" English
                         continue
-                    if '3' in sLangCode:    # data-lang-key="3"
+                    if '3' in sLang:        # data-lang-key="3" Englisch mit deutschen Untertitel
                         continue
-                    if sLangCode == '1':    # data-lang-key="1"
-                        sLang = 'Deutsch'   # Anzeige der Sprache
+                    if sLang == '1':        # data-lang-key="1" Deutsch
+                        sLang = '(DE)'      # Anzeige der Sprache Deutsch
                 if sLanguage == '2':        # Voreingestellte Sprache Englisch in settings.xml
-                    if '1' in sLangCode:    # data-lang-key="1"
+                    if '1' in sLang:        # data-lang-key="1" Deutsch
                         continue
-                    if '3' in sLangCode:    # data-lang-key="3"
+                    if '3' in sLang:        # data-lang-key="3" Englisch mit deutschen Untertitel
                         continue
-                    if sLangCode == '2':    # data-lang-key="2"
-                        sLang = 'Englisch'   # Anzeige der Sprache
+                    if sLang == '2':        # data-lang-key="2" English
+                        sLang = '(EN)'      # Anzeige der Sprache
                 if sLanguage == '3':        # Voreingestellte Sprache Japanisch in settings.xml
+                    cGui().showLanguage()   # Kein Eintrag in der ausgewählten Sprache verfügbar
                     continue
-                if sLanguage == '0':        # Alle Sprachen
-                    if sLangCode == '1':    # data-lang-key="1"
-                        sLang = 'Deutsch'   # Anzeige der Sprache
-                    if sLangCode == '2':    # data-lang-key="2"
-                        sLang = 'Englisch'  # Anzeige der Sprache
-                    elif sLangCode == '3':  # data-lang-key="3"
-                        sLang = 'Englisch mit deutschen Untertitel'    # Anzeige der Sprache
-                if 'HD' in aResult2[1]:     # PrÃ¼fen ob tuple aResult2 das Kennzeichen HD enthÃ¤lt, dann Ã¼bersteuern
-                    sQualy = 'HD'
+                if sLanguage == '0':  # Alle Sprachen
+                    if sLang == '1':  # data-lang-key="1" Deutsch
+                        sLang = '(DE)'  # Anzeige der Sprache Deutsch
+                    if sLang == '2':  # data-lang-key="2" Englisch
+                        sLang = '(EN)'  # Anzeige der Sprache Englisch
+                    elif sLang == '3':  # data-lang-key="3" Englisch mit deutschen Untertitel
+                        sLang = '(EN) Sub: (DE)'  # Anzeige der Sprache Englisch mit deutschen Untertitel
+                if 'HD' in aResult2[1]:  # Prüfen ob tuple aResult2 das Kennzeichen HD enthält, dann übersteuern
+                    sQuality = '720'
                 else:
-                    sQualy = 'SD'
+                    sQuality = '480'
                     # Ab hier wird der sName mit abgefragt z.B:
                     # aus dem Log [serienstream]: ['/redirect/12286260', 'VOE']
                     # hier ist die sUrl = '/redirect/12286260' und der sName 'VOE'
                     # hoster.py 194
-                hoster = {'link': [sUrl, sName], 'name': sName, 'displayedName': '%s %s %s' % (sName, sQualy, sLang),
-                        'languageCode': sLangCode}    # Language Code fÃ¼r hoster.py Sprache Prio
+                hoster = {'link': [sUrl, sName], 'name': sName, 'displayedName': '%s [I]%s [%sp][/I]' % (sName, sLang, sQuality), 'quality': sQuality, 'languageCode': sLang} # Language Code für hoster.py Sprache Prio
                 hosters.append(hoster)
             if hosters:
                 hosters.append('getHosterUrl')
@@ -356,42 +363,42 @@ def showHosters():
         isMatch, aResult = cParser.parse(sHtmlContent, pattern)
         aResult2 = cParser.parse(sHtmlContent, pattern2) # pattern 2 auslesen
         if isMatch:
-            for sLangCode, sUrl, sName, sQualy in aResult:
-                if cConfig().isBlockedHoster(sName)[0]: continue # Hoster aus settings.xml oder deaktivierten Resolver ausschlieÃŸen
+            for sLang, sUrl, sName, sQuality in aResult:
+                if cConfig().isBlockedHoster(sName)[0]: continue # Hoster aus settings.xml oder deaktivierten Resolver ausschließen
                 sLanguage = cConfig().getSetting('prefLanguage')
                 if sLanguage == '1':        # Voreingestellte Sprache Deutsch in settings.xml
-                    if '2' in sLangCode:    # data-lang-key="2"
+                    if '2' in sLang:        # data-lang-key="2"
                         continue
-                    if '3' in sLangCode:    # data-lang-key="3"
+                    if '3' in sLang:        # data-lang-key="3"
                         continue
-                    if sLangCode == '1':    # data-lang-key="1"
-                        sLang = 'Deutsch'   # Anzeige der Sprache
+                    if sLang == '1':        # data-lang-key="1"
+                        sLang = '(DE)'      # Anzeige der Sprache
                 if sLanguage == '2':        # Voreingestellte Sprache Englisch in settings.xml
-                    if '1' in sLangCode:    # data-lang-key="1"
+                    if '1' in sLang:        # data-lang-key="1"
                         continue
-                    if '3' in sLangCode:    # data-lang-key="3"
+                    if '3' in sLang:        # data-lang-key="3"
                         continue
-                    if sLangCode == '2':    # data-lang-key="2"
-                        sLang = 'Englisch'   # Anzeige der Sprache
+                    if sLang == '2':        # data-lang-key="2"
+                        sLang = '(EN)'      # Anzeige der Sprache
                 if sLanguage == '3':        # Voreingestellte Sprache Japanisch in settings.xml
+                    cGui().showLanguage()   # Kein Eintrag in der ausgewählten Sprache verfügbar
                     continue
                 if sLanguage == '0':        # Alle Sprachen
-                    if sLangCode == '1':    # data-lang-key="1"
-                        sLang = 'Deutsch'   # Anzeige der Sprache
-                    if sLangCode == '2':    # data-lang-key="2"
-                        sLang = 'Englisch'  # Anzeige der Sprache
-                    elif sLangCode == '3':  # data-lang-key="3"
-                        sLang = 'Englisch mit deutschen Untertitel'    # Anzeige der Sprache
-                if 'HD' in aResult2[1]:     # PrÃ¼fen ob tuple aResult2 das Kennzeichen HD enthÃ¤lt, dann Ã¼bersteuern
-                    sQualy = 'HD'
+                    if sLang == '1':        # data-lang-key="1"
+                        sLang = '(DE)'      # Anzeige der Sprache
+                    if sLang == '2':        # data-lang-key="2"
+                        sLang = '(EN)'      # Anzeige der Sprache
+                    elif sLang == '3':      # data-lang-key="3"
+                        sLang = '(EN) Sub: (DE)' # Anzeige der Sprache
+                if 'HD' in aResult2[1]:     # Prüfen ob tuple aResult2 das Kennzeichen HD enthält, dann übersteuern
+                    sQuality = '720'
                 else:
-                    sQualy = 'SD'
+                    sQuality = '480'
                     # Ab hier wird der sName mit abgefragt z.B:
                     # aus dem Log [serienstream]: ['/redirect/12286260', 'VOE']
                     # hier ist die sUrl = '/redirect/12286260' und der sName 'VOE'
                     # hoster.py 194
-                hoster = {'link': [sUrl, sName], 'name': sName, 'displayedName': '%s %s %s' % (sName, sQualy, sLang),
-                        'languageCode': sLangCode}    # Language Code fÃ¼r hoster.py Sprache Prio
+                hoster = {'link': [sUrl, sName], 'name': sName, 'displayedName': '%s [I]%s [%sp][/I]' % (sName, sLang, sQuality), 'quality': sQuality, 'languageCode': sLang} # Language Code für hoster.py Sprache Prio
                 hosters.append(hoster)
             if hosters:
                 hosters.append('getHosterUrl')
@@ -417,7 +424,7 @@ def getHosterUrl(hUrl):
     sUrl = Request.getRealUrl()
 
     if 'voe' in hUrl[1].lower():
-        isBlocked, sDomain = cConfig().isBlockedHoster(sUrl)  # Die funktion gibt 2 werte zurÃ¼ck!
+        isBlocked, sDomain = cConfig().isBlockedHoster(sUrl)  # Die funktion gibt 2 werte zurück!
         if isBlocked:  # Voe Pseudo sDomain nicht bekannt in resolveUrl
             sUrl = sUrl.replace(sDomain, 'voe.sx')
             return [{'streamUrl': sUrl, 'resolved': False}]
@@ -426,7 +433,7 @@ def getHosterUrl(hUrl):
 
 
 def showSearch():
-    sSearchText = cGui().showKeyBoard()
+    sSearchText = cGui().showKeyBoard(sHeading=cConfig().getLocalizedString(30281))
     if not sSearchText: return
     _search(False, sSearchText)
     cGui().setEndOfDirectory()
@@ -437,21 +444,19 @@ def _search(oGui, sSearchText):
 
 
 def SSsearch(sGui=False, sSearchText=False):
-
-    from json import loads
     oGui = sGui if sGui else cGui()
     params = ParameterHandler()
     params.getValue('sSearchText')
-
     oRequest = cRequestHandler(URL_SERIES, caching=True, ignoreErrors=(sGui is not False))
     oRequest.addHeaderEntry('X-Requested-With', 'XMLHttpRequest')
-    oRequest.addHeaderEntry('Referer', REFERER + '/serien')
+    oRequest.addHeaderEntry('Referer', REFERER  + '/serien')
     oRequest.addHeaderEntry('Origin', REFERER)
     oRequest.addHeaderEntry('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
     oRequest.addHeaderEntry('Upgrade-Insecure-Requests', '1')
     if cConfig().getSetting('global_search_' + SITE_IDENTIFIER) == 'true':
         oRequest.cacheTime = 60 * 60 * 24  # HTML Cache Zeit 1 Tag
     sHtmlContent = oRequest.request()
+
     if not sHtmlContent:
             return
 
@@ -459,8 +464,7 @@ def SSsearch(sGui=False, sSearchText=False):
 
     pattern = '<li><a data.+?href="([^"]+)".+?">(.*?)\<\/a><\/l' #link - title
 
-    oParser = cParser()
-    aResult = oParser.parse(sHtmlContent, pattern)
+    aResult = cParser.parse(sHtmlContent, pattern)
 
     if not aResult[0]:
         oGui.showInfo()
@@ -468,7 +472,8 @@ def SSsearch(sGui=False, sSearchText=False):
 
     total = len(aResult[1])
     for link, title in aResult[1]:
-        if not sst in title.lower():
+        titleLow = title.lower()
+        if not sst in titleLow and not cUtil.isSimilarByToken(sst, titleLow):
             continue
         else:
             #get images thumb / descr pro call. (optional)
@@ -490,7 +495,6 @@ def SSsearch(sGui=False, sSearchText=False):
                 params.setParam('sName', title)
                 oGui.addFolder(oGuiElement, params, True, total)
 
-
         if not sGui:
             oGui.setView('tvshows')
 
@@ -509,8 +513,7 @@ def getMetaInfo(link, title):   # Setzen von Metadata in Suche:
 
     pattern = 'seriesCoverBox">.*?data-src="([^"]+).*?data-full-description="([^"]+)"' #img , descr
 
-    oParser = cParser()
-    aResult = oParser.parse(sHtmlContent, pattern)
+    aResult = cParser.parse(sHtmlContent, pattern)
 
     if not aResult[0]:
         return

@@ -32,8 +32,8 @@ msgid "Hoster selection"
 msgstr "Hoster-Auswahl"
 
 msgctxt "#30006"
-msgid "Cachetime for websites in seconds"
-msgstr "Cachezeit für Webseiten in Sekunden"
+msgid "Cachetime for websites in minutes"
+msgstr "Cachezeit für Webseiten in Minuten"
 
 msgctxt "#30007"
 msgid "Maximum number in hosterlist"
@@ -106,6 +106,14 @@ msgstr "Trailer ansehen im Kontextmenü aktivieren"
 msgctxt "#30027"
 msgid "Watch trailer"
 msgstr "Trailer ansehen"
+
+msgctxt "#30028"
+msgid "Start manual update (one-time)"
+msgstr "Manuelle Aktualisierung (einmalig) starten"
+
+msgctxt "#30029"
+msgid "RAM Cache"
+msgstr "HTML Inhalte werden nur im RAM zwischengespeichert"
 
 msgctxt "#30030"
 msgid "ResolveURL Updates"
@@ -992,6 +1000,53 @@ msgctxt "#30278"
 msgid "Currently used domain"
 msgstr "Derzeitig verwendete Domain"
 
+msgctxt "#30279"
+msgid "[I]Show next page  >>>[/I]"
+msgstr "[I]Nächste Seite anzeigen  >>>[/I]"
+
+msgctxt "#30280"
+msgid "Please enter the search term."
+msgstr "Bitte den Suchbegriff eingeben."
+
+msgctxt "#30281"
+msgid "Please enter the movie or series title."
+msgstr "Bitte den Film oder Serien Titel eingeben."
+
+msgctxt "#30282"
+msgid "Please choose a number between 1 and "
+msgstr "Bitte wähle eine Zahl zwischen 1 und "
+
+msgctxt "#30284"
+msgid "[I]Start page search  >>> [/I] Page "
+msgstr "[I]Seitensuche starten  >>> [/I] Seite "
+
+msgctxt "#30285"
+msgid " of "
+msgstr " von "
+
+msgctxt "#30286"
+msgid " Pages [I]<<<[/I]"
+msgstr " Seiten [I]<<<[/I]"
+
+msgctxt "#30287"
+msgid "Please enter the title of the movie."
+msgstr "Bitte den Titel des Films eingeben."
+
+msgctxt "#30288"
+msgid "Please enter the title of the series."
+msgstr "Bitte den Titel der Serie eingeben."
+
+msgctxt "#30289"
+msgid "Please enter the title of the documentation."
+msgstr "Bitte den Titel der Dokumentation eingeben."
+
+msgctxt "#30290"
+msgid "Please enter the file name of the download."
+msgstr "Bitte den Dateinamen des Downloads eingeben."
+
+msgctxt "#30291"
+msgid "No API Key entered"
+msgstr "API Schlüssel fehlt"
 
 msgctxt "#30302"
 msgid "Seasons german"
@@ -1076,6 +1131,34 @@ msgstr "[COLOR red]Warnung vor dem Umgang der Entwickler Optionen jetzt anzeigen
 msgctxt "#30322"
 msgid "[B][COLOR cyan]xStream[/COLOR] [COLOR white]Warning (Developer Options)[/COLOR][/B]"
 msgstr "[B][COLOR cyan]xStream[/COLOR] [COLOR white]Warnhinweis (Entwickler Optionen)[/COLOR][/B]"
+
+msgctxt "#30323"
+msgid "ReCaptcha"
+msgstr "ReCaptcha"
+
+msgctxt "#30324"
+msgid "2Captcha"
+msgstr "2Captcha"
+
+msgctxt "#30325"
+msgid "9kw.eu"
+msgstr "9kw.eu"
+
+msgctxt "#30326"
+msgid "Select Captcha Solver"
+msgstr "Auswahl Captcha Solver"
+
+msgctxt "#30327"
+msgid "Use Self Solving"
+msgstr "Self Solving aktivieren"
+
+msgctxt "#30328"
+msgid "Captcha Services"
+msgstr "Captcha Dienste"
+
+msgctxt "#30329"
+msgid "Captcha Timeout (in seconds)"
+msgstr "Captcha Timeout (in Sekunden)"
 
 msgctxt "#30402"
 msgid "Countries"
@@ -1193,7 +1276,31 @@ msgctxt "#30430"
 msgid "Index page in xStream"
 msgstr "Indexseite in xStream"
 
-############### Scaper Language ###############
+msgctxt "#30431"
+msgid "[COLORred][I]Youtube required! Please create API key and enter it here.[/I][/COLOR]"
+msgstr "[COLORred][I]Youtube erforderlich! Bitte API Key erstellen und hier eintragen.[/I][/COLOR]"
+
+msgctxt "#30432"
+msgid "Update enabled"
+msgstr "Aktualisierung aktiviert"
+
+msgctxt "#30433"
+msgid "Update disabled"
+msgstr "Aktualisierung deaktiviert"
+
+msgctxt "#30434"
+msgid "actual DNS Nameserver"
+msgstr "aktiver DNS Nameserver"
+
+msgctxt "#30435"
+msgid "Installed from repository:"
+msgstr "Installiert aus Repository:"
+
+msgctxt "#30436"
+msgid "API Key"
+msgstr "API Schlüssel"
+
+############### Scraper Language ###############
 
 msgctxt "#30500"
 msgid "New"
@@ -1316,36 +1423,36 @@ msgid "Series Genre"
 msgstr "Serien Genre"
 
 msgctxt "#30530"
-msgid " (featured)"
-msgstr " (vorgestellt)"
+msgid " featured"
+msgstr " vorgestellt"
 
 msgctxt "#30531"
-msgid " (releases)"
-msgstr " (veröffentlicht)"
+msgid " releases"
+msgstr " veröffentlicht"
 
 msgctxt "#30532"
-msgid " (trending)"
-msgstr " (im Trend)"
+msgid " trending"
+msgstr " im Trend"
 
 msgctxt "#30533"
-msgid " (updates)"
-msgstr " (aktualisiert)"
+msgid " updates"
+msgstr " aktualisiert"
 
 msgctxt "#30534"
-msgid " (requested)"
-msgstr " (angefordert)"
+msgid " requested"
+msgstr " angefordert"
 
 msgctxt "#30535"
-msgid " (rating)"
-msgstr " (Bewertung)"
+msgid " rating"
+msgstr " Bewertung"
 
 msgctxt "#30536"
-msgid " (votes)"
-msgstr " (Stimmen)"
+msgid " votes"
+msgstr " Stimmen"
 
 msgctxt "#30537"
-msgid " (views)"
-msgstr " (Ansichten)"
+msgid " views"
+msgstr " Ansichten"
 
 msgctxt "#30538"
 msgid " Country"
@@ -1399,6 +1506,18 @@ msgctxt "#30550"
 msgid "Movies of the week"
 msgstr "Filme diese Woche im Trend"
 
+msgctxt "#30551"
+msgid "Movies Genre"
+msgstr "Filme Genre"
+
+msgctxt "#30552"
+msgid "Most watched"
+msgstr "Meist gesehen"
+
+msgctxt "#30553"
+msgid "Actors"
+msgstr "Schauspieler"
+
 ############### Site Plugins ###############
 
 msgctxt "#30700"
@@ -1406,16 +1525,16 @@ msgid "Aniworld"
 msgstr ""
 
 msgctxt "#30701"
-msgid "Dokus4"
-msgstr ""
+msgid "Documentations"
+msgstr "Dokumentationen"
 
 msgctxt "#30702"
 msgid "FilmPalast"
 msgstr ""
 
 msgctxt "#30703"
-msgid "Flimmerstube"
-msgstr ""
+msgid "Burning Series"
+msgstr "Burning Series"
 
 msgctxt "#30704"
 msgid "HD-Filme"
@@ -1478,11 +1597,11 @@ msgid "KinoKiste"
 msgstr ""
 
 msgctxt "#30719"
-msgid ""
+msgid "Kids Tube"
 msgstr ""
 
 msgctxt "#30720"
-msgid "Cinemathek"
+msgid "FHD Filme"
 msgstr ""
 
 msgctxt "#30721"
@@ -1490,11 +1609,11 @@ msgid "StreamCloud"
 msgstr ""
 
 msgctxt "#30722"
-msgid ""
+msgid "TestPlugin"
 msgstr ""
 
 msgctxt "#30723"
-msgid ""
+msgid "Serien-Stream"
 msgstr ""
 
 msgctxt "#30724"
@@ -1506,11 +1625,11 @@ msgid "Streamcloud"
 msgstr ""
 
 msgctxt "#30726"
-msgid ""
+msgid "SerienHD"
 msgstr ""
 
 msgctxt "#30727"
-msgid ""
+msgid "API Suchmaschine"
 msgstr ""
 
 msgctxt "#30728"

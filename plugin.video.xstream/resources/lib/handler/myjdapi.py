@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Python 3
 
-import hashlib
+import hashlib 
 import hmac
 import json
 import time
@@ -373,8 +373,7 @@ class Myjdapi:
 
     def get_device(self, device_name=None, device_id=None):
         if not self.is_connected():
-            raise (MYJDException("No connection established\
-"))
+            raise (MYJDException("No connection established\n"))
         if device_id is not None:
             for device in self.__devices:
                 if device["id"] == device_id:
@@ -383,14 +382,12 @@ class Myjdapi:
             for device in self.__devices:
                 if device["name"] == device_name:
                     return Jddevice(self, device)
-        raise MYJDException("Device not found\
-")
+        raise MYJDException("Device not found\n")
 
     def request_api(self, path, http_method="GET", params=None, action=None):
         data = None
         if not self.is_connected() and path != "/my/connect":
-            raise (MYJDException("No connection established\
-"))
+            raise (MYJDException("No connection established\n"))
         if http_method == "GET":
             query = [path + "?"]
             for param in params:
@@ -422,20 +419,14 @@ class Myjdapi:
             encrypted_response = requests.post(request_url, headers={"Content-Type": "application/aesjson-jd; charset=utf-8"}, data=encrypted_data)
         if encrypted_response.status_code != 200:
             error_msg = json.loads(encrypted_response.text)
-            msg = "\
-\tSOURCE: " + error_msg["src"] + "\
-\tTYPE: " + \
- error_msg["type"] + "\
-------\
-REQUEST_URL: " + \
+            msg = "\n\tSOURCE: " + error_msg["src"] + "\n\tTYPE: " + \
+                  error_msg["type"] + "\n------\nREQUEST_URL: " + \
                   self.__api_url + path
             if http_method == "GET":
                 msg += query
-            msg += "\
-"
+            msg += "\n"
             if data is not None:
-                msg += "DATA:\
-" + data
+                msg += "DATA:\n" + data
             raise (MYJDException(msg))
         if action is None:
             if not self.__server_encryption_token:

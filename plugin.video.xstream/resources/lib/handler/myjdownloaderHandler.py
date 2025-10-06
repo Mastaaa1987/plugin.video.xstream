@@ -5,9 +5,8 @@ import myjdapi
 
 from resources.lib.config import cConfig
 from resources.lib.gui.gui import cGui
-from xbmc import LOGINFO as LOGNOTICE, LOGERROR, LOGWARNING, log, executebuiltin, getCondVisibility, getInfoLabel
+from xbmc import LOGINFO as LOGNOTICE, log
 
-LOGMESSAGE = cConfig().getLocalizedString(30166)
 class cMyJDownloaderHandler:
 
     def sendToMyJDownloader(self, sUrl, sMovieTitle):
@@ -31,7 +30,7 @@ class cMyJDownloaderHandler:
         return False
 
     def __checkConfig(self):
-        log(LOGMESSAGE + ' -> [myjdownloaderHandler]: check MYJD Addon setings', LOGNOTICE)
+        log(cConfig().getLocalizedString(30166) + ' -> [myjdownloaderHandler]: check MYJD Addon setings', LOGNOTICE)
         if cConfig().getSetting('myjd_enabled') == 'true':
             return True
         return False

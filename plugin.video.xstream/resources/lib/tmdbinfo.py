@@ -31,7 +31,7 @@ def WindowsBoxes(sTitle, sFileName, metaType, year=''):
     else:
         meta['releaseDate'] = '-'
     if 'duration' in meta and meta['duration']:
-        duration = meta['duration'] // 60
+        duration = meta['duration']
         durationH = duration // 60
         meta['durationH'] = durationH
         meta['durationM'] = '{:02d}'.format(int(duration - 60 * durationH))
@@ -215,7 +215,8 @@ def WindowsBoxes(sTitle, sFileName, metaType, year=''):
             if action.getId() in (9, 10, 11, 30, 92, 216, 247, 257, 275, 61467, 61448):
                 self.close()
 
-    path = 'special://home/addons/plugin.video.xstream'
+# kasi
+    path = 'special://home/addons/%s' % cConfig().getAddonInfo('id')   
     wd = XMLDialog('info.xml', path, 'default', '720p')
     wd.doModal()
     del wd

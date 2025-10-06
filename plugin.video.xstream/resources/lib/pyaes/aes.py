@@ -262,7 +262,7 @@ class AES(object):
         result.append((self.Si[(t[(i + s2) % 4] >> 8) & 0xFF] ^ (tt >> 8)) & 0xFF)
         result.append((self.Si[ t[(i + s3) % 4] & 0xFF] ^ tt ) & 0xFF)
 
-    return result
+        return result
 
 
 class Counter(object):
@@ -283,14 +283,14 @@ class Counter(object):
         for i in xrange(len(self._counter) - 1, -1, -1):
             self._counter[i] += 1
 
-        if self._counter[i] < 256:
-            break
-            # Carry the one
-            self._counter[i] = 0
+            if self._counter[i] < 256:
+                break
+                # Carry the one
+                self._counter[i] = 0
 
-        # Overflow
-        else:
-            self._counter = [ 0 ] * len(self._counter)
+            # Overflow
+            else:
+                self._counter = [ 0 ] * len(self._counter)
 
 
 class AESBlockModeOfOperation(object):

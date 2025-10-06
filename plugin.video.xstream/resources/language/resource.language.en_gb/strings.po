@@ -32,7 +32,7 @@ msgid "Hoster selection"
 msgstr ""
 
 msgctxt "#30006"
-msgid "Cachetime for websites in seconds"
+msgid "Cachetime for websites in minutes"
 msgstr ""
 
 msgctxt "#30007"
@@ -105,6 +105,14 @@ msgstr ""
 
 msgctxt "#30027"
 msgid "Watch trailer"
+msgstr ""
+
+msgctxt "#30028"
+msgid "Start manual update (one-time)"
+msgstr ""
+
+msgctxt "#30029"
+msgid "RAM Cache"
 msgstr ""
 
 msgctxt "#30030"
@@ -993,6 +1001,57 @@ msgctxt "#30278"
 msgid "Currently used domain"
 msgstr ""
 
+msgctxt "#30279"
+msgid "[I]Show next page  >>>[/I]"
+msgstr ""
+
+msgctxt "#30280"
+msgid "Please enter the search term."
+msgstr ""
+
+msgctxt "#30281"
+msgid "Please enter the movie or series title."
+msgstr ""
+
+msgctxt "#30282"
+msgid "Please choose a number between 1 and "
+msgstr ""
+
+msgctxt "#30283"
+msgid "Please choose a number between 1 and "
+msgstr ""
+
+msgctxt "#30284"
+msgid "[I]Start page search  >>> [/I] Page "
+msgstr ""
+
+msgctxt "#30285"
+msgid " of "
+msgstr ""
+
+msgctxt "#30286"
+msgid " Pages [I]<<<[/I]"
+msgstr ""
+
+msgctxt "#30287"
+msgid "Please enter the title of the movie."
+msgstr ""
+
+msgctxt "#30288"
+msgid "Please enter the title of the series."
+msgstr ""
+
+msgctxt "#30289"
+msgid "Please enter the title of the documentation."
+msgstr ""
+
+msgctxt "#30290"
+msgid "Please enter the file name of the download."
+msgstr ""
+
+msgctxt "#30291"
+msgid "No API Key entered"
+msgstr ""
 
 msgctxt "#30302"
 msgid "Seasons german"
@@ -1076,6 +1135,34 @@ msgstr ""
 
 msgctxt "#30322"
 msgid "[B][COLOR cyan]xStream[/COLOR] [COLOR white]Warning (Developer Options)[/COLOR][/B]"
+msgstr ""
+
+msgctxt "#30323"
+msgid "Recaptcha"
+msgstr ""
+
+msgctxt "#30324"
+msgid "2Captcha"
+msgstr ""
+
+msgctxt "#30325"
+msgid "9kw.eu"
+msgstr ""
+
+msgctxt "#30326"
+msgid "Select Captcha Solver"
+msgstr ""
+
+msgctxt "#30327"
+msgid "Use Self Solving"
+msgstr ""
+
+msgctxt "#30328"
+msgid "Captcha Services"
+msgstr ""
+
+msgctxt "#30329"
+msgid "Captcha Timeout (in seconds)"
 msgstr ""
 
 msgctxt "#30402"
@@ -1194,7 +1281,31 @@ msgctxt "#30430"
 msgid "Index page in xStream"
 msgstr ""
 
-############### Scaper Language ###############
+msgctxt "#30431"
+msgid "[COLORred][I]Youtube required! Please create API key and enter it here.[/I][/COLOR]"
+msgstr ""
+
+msgctxt "#30432"
+msgid "Update enabled"
+msgstr ""
+
+msgctxt "#30433"
+msgid "Update disabled"
+msgstr ""
+
+msgctxt "#30434"
+msgid "actual DNS Nameserver"
+msgstr ""
+
+msgctxt "#30435"
+msgid "Installed from repository:"
+msgstr ""
+
+msgctxt "#30436"
+msgid "API Key"
+msgstr ""
+
+############### Scraper Language ###############
 
 msgctxt "#30500"
 msgid "New"
@@ -1317,35 +1428,35 @@ msgid "Series Genre"
 msgstr ""
 
 msgctxt "#30530"
-msgid " (featured)"
+msgid " featured"
 msgstr ""
 
 msgctxt "#30531"
-msgid " (releases)"
+msgid " releases"
 msgstr ""
 
 msgctxt "#30532"
-msgid " (trending)"
+msgid " trending"
 msgstr ""
 
 msgctxt "#30533"
-msgid " (updates)"
+msgid " updates"
 msgstr ""
 
 msgctxt "#30534"
-msgid " (requested)"
+msgid " requested"
 msgstr ""
 
 msgctxt "#30535"
-msgid " (rating)"
+msgid " rating"
 msgstr ""
 
 msgctxt "#30536"
-msgid " (votes)"
+msgid " votes"
 msgstr ""
 
 msgctxt "#30537"
-msgid " (views)"
+msgid " views"
 msgstr ""
 
 msgctxt "#30538"
@@ -1400,6 +1511,18 @@ msgctxt "#30550"
 msgid "Movies of the week"
 msgstr ""
 
+msgctxt "#30551"
+msgid "Movies Genre"
+msgstr ""
+
+msgctxt "#30552"
+msgid "Most watched"
+msgstr ""
+
+msgctxt "#30553"
+msgid "Actors"
+msgstr ""
+
 ############### Site Plugins ###############
 
 msgctxt "#30700"
@@ -1407,7 +1530,7 @@ msgid "Aniworld"
 msgstr ""
 
 msgctxt "#30701"
-msgid "Dokus4"
+msgid "Documentations"
 msgstr ""
 
 msgctxt "#30702"
@@ -1415,7 +1538,7 @@ msgid "FilmPalast"
 msgstr ""
 
 msgctxt "#30703"
-msgid "Flimmerstube"
+msgid "Burning Series"
 msgstr ""
 
 msgctxt "#30704"
@@ -1479,11 +1602,11 @@ msgid "KinoKiste"
 msgstr ""
 
 msgctxt "#30719"
-msgid ""
+msgid "Kids Tube"
 msgstr ""
 
 msgctxt "#30720"
-msgid "Cinemathek"
+msgid "FHD Filme"
 msgstr ""
 
 msgctxt "#30721"
@@ -1491,11 +1614,11 @@ msgid "StreamCloud"
 msgstr ""
 
 msgctxt "#30722"
-msgid ""
+msgid "TestPlugin"
 msgstr ""
 
 msgctxt "#30723"
-msgid ""
+msgid "Serien-Stream"
 msgstr ""
 
 msgctxt "#30724"
@@ -1507,11 +1630,11 @@ msgid "Streamcloud"
 msgstr ""
 
 msgctxt "#30726"
-msgid ""
+msgid "SerienHD"
 msgstr ""
 
 msgctxt "#30727"
-msgid ""
+msgid "API Suchmaschine"
 msgstr ""
 
 msgctxt "#30728"

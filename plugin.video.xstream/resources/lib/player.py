@@ -4,9 +4,8 @@
 import xbmc
 from resources.lib.gui.gui import cGui
 from resources.lib.config import cConfig
-from xbmc import LOGINFO as LOGNOTICE, LOGERROR, LOGWARNING, log, executebuiltin, getCondVisibility, getInfoLabel
+from xbmc import LOGINFO as LOGNOTICE, LOGERROR, log
 
-LOGMESSAGE = cConfig().getLocalizedString(30166)
 class XstreamPlayer(xbmc.Player):
     def __init__(self, *args, **kwargs):
         xbmc.Player.__init__(self, *args, **kwargs)
@@ -14,21 +13,50 @@ class XstreamPlayer(xbmc.Player):
         self.streamSuccess = True
         self.playedTime = 0
         self.totalTime = 999999
-        log(LOGMESSAGE + ' -> [player]: player instance created', LOGNOTICE)
+        self.from_global_search = False  # Track if started from Global Search
+        log(cConfig().getLocalizedString(30166) + ' -> [player]: player instance created', LOGNOTICE)
 
     def onPlayBackStarted(self):
-        log(LOGMESSAGE + ' -> [player]: starting Playback', LOGNOTICE)
-        self.totalTime = self.getTotalTime()
+        log(cConfig().getLocalizedString(30166) + ' -> [player]: starting Playback', LOGNOTICE)
+        try:
+            self.totalTime = self.getTotalTime()
+        except:
+            self.totalTime = 999999
+
+        # Detect if playback started from Global Search
+        try:
+            path = xbmc.getInfoLabel('Container.FolderPath')
+            if path:
+                low = path.lower()
+                keywords = [
+                    'function=globalsearch',
+                    'site=globalsearch',
+                    'function=searchalter',
+                    'function=searchtmdb'
+                ]
+                if any(kw in low for kw in keywords):
+                    self.from_global_search = True
+                    log(cConfig().getLocalizedString(30166) + ' -> [player]: Detected Global Search context', LOGNOTICE)
+        except:
+            pass
 
     def onPlayBackStopped(self):
-        log(LOGMESSAGE + ' -> [player]: Playback stopped', LOGNOTICE)
+        log(cConfig().getLocalizedString(30166) + ' -> [player]: Playback stopped', LOGNOTICE)
         if self.playedTime == 0 and self.totalTime == 999999:
-        self.streamSuccess = False
-        log(LOGMESSAGE + ' -> [player]: Kodi failed to open stream', LOGERROR)
+            self.streamSuccess = False
+            log(cConfig().getLocalizedString(30166) + ' -> [player]: Kodi failed to open stream', LOGERROR)
         self.streamFinished = True
 
+        # After playback ends, if we came from Global Search → return to main menu
+        if self.from_global_search:
+            try:
+                xbmc.executebuiltin('Container.Update(plugin://plugin.video.xstream/)')
+                log('xStream -> [player]: Returning to addon main menu after Global Search', LOGNOTICE)
+            except Exception as e:
+                log('xStream -> [player]: Failed to return to main menu: %s' % str(e), LOGERROR)
+
     def onPlayBackEnded(self):
-        log(LOGMESSAGE + ' -> [player]: Playback completed', LOGNOTICE)
+        log(cConfig().getLocalizedString(30166) + ' -> [player]: Playback completed', LOGNOTICE)
         self.onPlayBackStopped()
 
 
@@ -49,7 +77,7 @@ class cPlayer:
         oPlaylist.add(oGuiElement.getMediaUrl(), oListItem)
 
     def startPlayer(self):
-        log(LOGMESSAGE + ' -> [player]: start player', LOGNOTICE)
+        log(cConfig().getLocalizedString(30166) + ' -> [player]: start player', LOGNOTICE)
         xbmcPlayer = XstreamPlayer()
         monitor = xbmc.Monitor()
         while (not monitor.abortRequested()) & (not xbmcPlayer.streamFinished):

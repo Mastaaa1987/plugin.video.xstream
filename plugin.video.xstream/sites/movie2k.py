@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 # Python 3
 # Always pay attention to the translations in the menu!
-# HTML LangzeitCache hinzugef\xc3\x83\xc2\xbcgt
-# showEntries: 6 Stunden
-# showEpisodes: 4 Stunden
+# HTML LangzeitCache hinzugefügt
+# showEntries:    6 Stunden
+# showEpisodes:   4 Stunden
+
 
 import re
 
 from resources.lib.handler.ParameterHandler import ParameterHandler
 from resources.lib.handler.requestHandler import cRequestHandler
-from resources.lib.tools import logger, cParser, validater
+from resources.lib.tools import logger, cParser
 from resources.lib.gui.guiElement import cGuiElement
 from resources.lib.config import cConfig
 from resources.lib.gui.gui import cGui
@@ -19,17 +20,17 @@ SITE_IDENTIFIER = 'movie2k'
 SITE_NAME = 'Movie2K'
 SITE_ICON = 'movie2k.png'
 
-URL_MAIN = 'https://api.movie2k.ch/data/browse/?lang=%s&type=%s&order_by=%s&page=%s' # lang=%s 2 = deutsch / 3 = englisch / all = Alles
-URL_SEARCH = 'https://api.movie2k.ch/data/browse/?lang=%s&keyword=%s&page=%s'
+URL_MAIN = 'https://movie2k.ch/data/browse/?lang=%s&type=%s&order_by=%s&page=%s'  # lang=%s 2 = deutsch / 3 = englisch / all = Alles
+URL_SEARCH = 'https://movie2k.ch/data/browse/?lang=%s&keyword=%s&page=%s&limit=0'
 URL_THUMBNAIL = 'https://image.tmdb.org/t/p/w300%s'
-URL_WATCH = 'https://api.movie2k.ch/data/watch/?_id=%s'
+URL_WATCH = 'https://movie2k.ch/data/watch/?_id=%s'
 # Global search function is thus deactivated!
 if cConfig().getSetting('global_search_' + SITE_IDENTIFIER) == 'false':
- SITE_GLOBAL_SEARCH = False
- logger.info('-> [SitePlugin]: globalSearch for %s is deactivated.' % SITE_NAME)
+    SITE_GLOBAL_SEARCH = False
+    logger.info('-> [SitePlugin]: globalSearch for %s is deactivated.' % SITE_NAME)
 
 # Domain Abfrage
-DOMAIN = cConfig().getSetting('plugin_' + SITE_IDENTIFIER + '.domain', 'www2.movie2k.ch') # Domain Auswahl \xc3\x83\xc2\xbcber die xStream Einstellungen m\xc3\x83\xc2\xb6glich
+DOMAIN = cConfig().getSetting('plugin_' + SITE_IDENTIFIER + '.domain', 'www2.movie2k.ch') # Domain Auswahl über die xStream Einstellungen möglich
 STATUS = cConfig().getSetting('plugin_' + SITE_IDENTIFIER + '_status') # Status Code Abfrage der Domain
 ACTIVE = cConfig().getSetting('plugin_' + SITE_IDENTIFIER) # Ob Plugin aktiviert ist oder nicht
 
@@ -37,32 +38,27 @@ ORIGIN = 'https://' + DOMAIN + '/'
 # ORIGIN = 'https://movie2k.at/'
 REFERER = ORIGIN + '/'
 
+#
 
-try:
-    validater()
-except:
-    sys.exit()
 
 def load():
     logger.info('Load %s' % SITE_NAME)
     params = ParameterHandler()
     sLanguage = cConfig().getSetting('prefLanguage')
-    # \xc3\x83\xe2\x80\x9enderung des Sprachcodes nach voreigestellter Sprache
-    if sLanguage == '0': # prefLang Alle Sprachen
+    # Änderung des Sprachcodes nach voreigestellter Sprache
+    if sLanguage == '0':  # prefLang Alle Sprachen
         sLang = 'all'
-    if sLanguage == '1': # prefLang Deutsch
+    if sLanguage == '1':  # prefLang Deutsch
         sLang = '2'
-    if sLanguage == '2': # prefLang Englisch
+    if sLanguage == '2':  # prefLang Englisch
         sLang = '3'
-    elif sLanguage == '3': # prefLang Japanisch
+    elif sLanguage == '3':  # prefLang Japanisch
         sLang = cGui().showLanguage()
         return
     params.setParam('sLanguage', sLang)
-    cGui().addFolder(cGuiElement(cConfig().getLocalizedString(30502), SITE_IDENTIFIER, 'showMovieMenu'),
-    params) # Movies
-    cGui().addFolder(cGuiElement(cConfig().getLocalizedString(30511), SITE_IDENTIFIER, 'showSeriesMenu'),
-    params) # Series
-    cGui().addFolder(cGuiElement(cConfig().getLocalizedString(30520), SITE_IDENTIFIER, 'showSearch'), params) # Search
+    cGui().addFolder(cGuiElement(cConfig().getLocalizedString(30502), SITE_IDENTIFIER, 'showMovieMenu'), params)  # Movies
+    cGui().addFolder(cGuiElement(cConfig().getLocalizedString(30511), SITE_IDENTIFIER, 'showSeriesMenu'), params)  # Series
+    cGui().addFolder(cGuiElement(cConfig().getLocalizedString(30520), SITE_IDENTIFIER, 'showSearch'), params)  # Search
     cGui().setEndOfDirectory()
 
 
@@ -136,7 +132,7 @@ def showEntries(entryUrl=False, sGui=False, sSearchText=False):
     try:
         oRequest = cRequestHandler(entryUrl)
         if cConfig().getSetting('global_search_' + SITE_IDENTIFIER) == 'true':
-        oRequest.cacheTime = 60 plug plug2 plug3 sites sites0 test.py test.sh test.txt 60 plug plug2 plug3 sites sites0 test.py test.sh test.txt 6 # HTML Cache Zeit 6 Stunden
+            oRequest.cacheTime = 60 * 60 * 6  # HTML Cache Zeit 6 Stunden
         oRequest.addHeaderEntry('Referer', REFERER)
         oRequest.addHeaderEntry('Origin', ORIGIN)
         sJson = oRequest.request()
@@ -145,7 +141,7 @@ def showEntries(entryUrl=False, sGui=False, sSearchText=False):
         if not sGui: oGui.showInfo()
         return
 
-    if 'movies' not in aJson or len(aJson['movies']) == 0:
+    if 'movies' not in aJson or not isinstance(aJson.get('movies'), list) or len(aJson['movies']) == 0:
         if not sGui: oGui.showInfo()
         return
 
@@ -154,53 +150,56 @@ def showEntries(entryUrl=False, sGui=False, sSearchText=False):
     for movie in aJson['movies']:
         if '_id' in movie:
             total += 1
-        for movie in aJson['movies']:
-            sTitle = movie['title']
-            if sSearchText and not cParser().search(sSearchText, sTitle):
-                continue
-            if 'Staffel' in sTitle:
-                isTvshow = True
-            oGuiElement = cGuiElement(sTitle, SITE_IDENTIFIER, 'showEpisodes' if isTvshow else 'showHosters')
-            if 'poster_path_season' in movie:
-                sThumbnail = URL_THUMBNAIL % movie['poster_path_season']
-            elif 'poster_path' in movie:
-                sThumbnail = URL_THUMBNAIL % movie['poster_path']
-            elif 'backdrop_path' in movie:
-                sThumbnail = URL_THUMBNAIL % movie['backdrop_path']
-                oGuiElement.setThumbnail(sThumbnail)
-            if 'storyline' in movie:
-                oGuiElement.setDescription(movie['storyline'])
-            elif 'overview' in movie:
-                oGuiElement.setDescription(movie['overview'])
-            if 'year' in movie:
-                oGuiElement.setYear(movie['year'])
-            if 'quality' in movie:
-                oGuiElement.setQuality(_getQuality(movie['quality']))
-            if 'rating' in movie:
-                oGuiElement.addItemValue('rating', movie['rating'])
-            if 'lang' in movie:
-                if (sLanguage != '1' and movie['lang'] == 2): # Deutsch
-                    oGuiElement.setLanguage('DE')
-                if (sLanguage != '2' and movie['lang'] == 3): # Englisch
-                    oGuiElement.setLanguage('EN')
-            oGuiElement.setMediaType('tvshows' if isTvshow else 'movie')
-            if 'runtime' in movie:
-                isMatch, sRuntime = cParser.parseSingleResult(movie['runtime'], '\d+')
+    for movie in aJson['movies']:
+        if not '_id' in movie:
+            continue
+        sTitle = str(movie['title'])
+        if sSearchText and not cParser.search(sSearchText, sTitle):
+            continue
+        if 'Staffel' in sTitle or 'Season' in sTitle:
+            isTvshow = True
+        oGuiElement = cGuiElement(sTitle, SITE_IDENTIFIER, 'showEpisodes' if isTvshow else 'showHosters')
+        if 'poster_path_season' in movie and movie['poster_path_season']:
+            sThumbnail = URL_THUMBNAIL % str(movie['poster_path_season'])
+        elif 'poster_path' in movie and movie['poster_path']:
+            sThumbnail = URL_THUMBNAIL % str(movie['poster_path'])
+        elif 'backdrop_path' in movie and movie['backdrop_path']:
+            sThumbnail = URL_THUMBNAIL % str(movie['backdrop_path'])
+        if sThumbnail:
+            oGuiElement.setThumbnail(sThumbnail)
+        if 'storyline' in movie:
+            oGuiElement.setDescription(str(movie['storyline']))
+        elif 'overview' in movie:
+            oGuiElement.setDescription(str(movie['overview']))
+        if 'year' in movie and len(str(movie['year'])) == 4:
+            oGuiElement.setYear(movie['year'])
+        if 'quality' in movie:
+            oGuiElement.setQuality(_getQuality(movie['quality']))
+        if 'rating' in movie:
+            oGuiElement.addItemValue('rating', movie['rating'])
+        if 'lang' in movie:
+            if (sLanguage != '1' and movie['lang'] == 2):  # Deutsch
+                oGuiElement.setLanguage('DE')
+            if (sLanguage != '2' and movie['lang'] == 3):  # Englisch
+                oGuiElement.setLanguage('EN')
+        oGuiElement.setMediaType('tvshow' if isTvshow else 'movie')
+        if 'runtime' in movie:
+            isMatch, sRuntime = cParser.parseSingleResult(movie['runtime'], '\d+')
             if isMatch:
                 oGuiElement.addItemValue('duration', sRuntime)
-            params.setParam('entryUrl', URL_WATCH % movie['_id'])
-            params.setParam('sName', sTitle)
-            params.setParam('sThumbnail', sThumbnail)
-            oGui.addFolder(oGuiElement, params, isTvshow, total)
+        params.setParam('entryUrl', URL_WATCH % str(movie['_id']))
+        params.setParam('sName', sTitle)
+        params.setParam('sThumbnail', sThumbnail)
+        oGui.addFolder(oGuiElement, params, isTvshow, total)
 
-        if not sGui and not sSearchText:
-            curPage = aJson['pager']['currentPage']
+    if not sGui and not sSearchText:
+        curPage = aJson['pager']['currentPage']
         if curPage < aJson['pager']['totalPages']:
             sNextUrl = entryUrl.replace('page=' + str(curPage), 'page=' + str(curPage + 1))
-        params.setParam('sUrl', sNextUrl)
-        oGui.addNextPage(SITE_IDENTIFIER, 'showEntries', params)
-    oGui.setView('tvshows' if isTvshow else 'movies')
-    oGui.setEndOfDirectory()
+            params.setParam('sUrl', sNextUrl)
+            oGui.addNextPage(SITE_IDENTIFIER, 'showEntries', params)
+        oGui.setView('tvshows' if isTvshow else 'movies')
+        oGui.setEndOfDirectory()
 
 
 def showEpisodes():
@@ -211,7 +210,7 @@ def showEpisodes():
     try:
         oRequest = cRequestHandler(sUrl)
         if cConfig().getSetting('global_search_' + SITE_IDENTIFIER) == 'true':
-        oRequest.cacheTime = 60 plug plug2 plug3 sites sites0 test.py test.sh test.txt 60 plug plug2 plug3 sites sites0 test.py test.sh test.txt 4 # HTML Cache Zeit 4 Stunden
+            oRequest.cacheTime = 60 * 60 * 4  # HTML Cache Zeit 4 Stunden
         oRequest.addHeaderEntry('Referer', REFERER)
         oRequest.addHeaderEntry('Origin', ORIGIN)
         sJson = oRequest.request()
@@ -227,19 +226,19 @@ def showEpisodes():
     for stream in aJson['streams']:
         if 'e' in stream:
             aEpisodes.append(int(stream['e']))
-        if aEpisodes:
-            aEpisodesSorted = set(aEpisodes)
-    total = len(aEpisodesSorted)
-    for sEpisode in aEpisodesSorted:
-        oGuiElement = cGuiElement('Episode ' + str(sEpisode), SITE_IDENTIFIER, 'showHosters')
-        oGuiElement.setThumbnail(sThumbnail)
-        if 's' in aJson:
-            oGuiElement.setSeason(aJson['s'])
-        oGuiElement.setTVShowTitle('Episode ' + str(sEpisode))
-        oGuiElement.setEpisode(sEpisode)
-        oGuiElement.setMediaType('episode')
-        cGui().addFolder(oGuiElement, params, False, total)
-        cGui().setView('episodes')
+    if aEpisodes:
+        aEpisodesSorted = set(aEpisodes)
+        total = len(aEpisodesSorted)
+        for sEpisode in aEpisodesSorted:
+            oGuiElement = cGuiElement('Episode ' + str(sEpisode), SITE_IDENTIFIER, 'showHosters')
+            oGuiElement.setThumbnail(sThumbnail)
+            if 's' in aJson:
+                oGuiElement.setSeason(aJson['s'])
+            oGuiElement.setTVShowTitle('Episode ' + str(sEpisode))
+            oGuiElement.setEpisode(sEpisode)
+            oGuiElement.setMediaType('episode')
+            cGui().addFolder(oGuiElement, params, False, total)
+    cGui().setView('episodes')
     cGui().setEndOfDirectory()
 
 
@@ -249,7 +248,7 @@ def showHosters():
     sUrl = params.getValue('entryUrl')
     sEpisode = params.getValue('episode')
     try:
-        oRequest = cRequestHandler(sUrl)
+        oRequest = cRequestHandler(sUrl, caching=False)
         oRequest.addHeaderEntry('Referer', REFERER)
         oRequest.addHeaderEntry('Origin', ORIGIN)
         sJson = oRequest.request()
@@ -259,19 +258,19 @@ def showHosters():
         aJson = loads(sJson)
         if 'streams' in aJson:
             i = 0
-        for stream in aJson['streams']:
-            if (('e' not in stream) or (str(sEpisode) == str(stream['e']))):
-                sHoster = str(i) + ':'
-            isMatch, aName = cParser.parse(stream['stream'], '//([^/]+)/')
-            if isMatch:
-                sName = aName[0][:aName[0].rindex('.')]
-                if cConfig().isBlockedHoster(sName)[0]: continue # Hoster aus settings.xml oder deaktivierten Resolver ausschlie\xc3\x83\xc5\xb8en
-            sHoster = sHoster + ' ' + sName
-            if 'release' in stream:
-                sHoster = sHoster + ' [I][' + _getQuality(stream['release']) + '][/I]'
-            hoster = {'link': stream['stream'], 'name': sHoster}
-            hosters.append(hoster)
-            i += 1
+            for stream in aJson['streams']:
+                if (('e' not in stream) or (str(sEpisode) == str(stream['e']))):
+                    sHoster = str(i) + ':'
+                    isMatch, aName = cParser.parse(stream['stream'], '//([^/]+)/')
+                    if isMatch:
+                        sName = aName[0][:aName[0].rindex('.')]
+                        if cConfig().isBlockedHoster(sName)[0]: continue  # Hoster aus settings.xml oder deaktivierten Resolver ausschließen
+                        sHoster = sHoster + ' ' + sName
+                    if 'release' in stream and str(stream['release']) != '':
+                        sHoster = sHoster + ' [I][' + _getQuality(stream['release']) + '][/I]'
+                    hoster = {'link': stream['stream'], 'name': sHoster}
+                    hosters.append(hoster)
+                    i += 1
     if hosters:
         hosters.append('getHosterUrl')
     return hosters
@@ -282,7 +281,7 @@ def getHosterUrl(sUrl=False):
 
 
 def showSearch():
-    sSearchText = cGui().showKeyBoard()
+    sSearchText = cGui().showKeyBoard(sHeading=cConfig().getLocalizedString(30281))
     if not sSearchText: return
     _search(False, sSearchText)
     cGui().setEndOfDirectory()
@@ -291,10 +290,10 @@ def showSearch():
 def _search(oGui, sSearchText):
     params = ParameterHandler()
     sLanguage = cConfig().getSetting('prefLanguage')
-    if sLanguage == '0': # prefLang Alle Sprachen
+    if sLanguage == '0':  # prefLang Alle Sprachen
         sLang = 'all'
-    if sLanguage == '1': # prefLang Deutsch
+    if sLanguage == '1':  # prefLang Deutsch
         sLang = '2'
-    if sLanguage == '2': # prefLang Englisch
+    if sLanguage == '2':  # prefLang Englisch
         sLang = '3'
-    showEntries(URL_SEARCH % (sLang, cParser().quotePlus(sSearchText), '1'), oGui, sSearchText)
+    showEntries(URL_SEARCH % (sLang, cParser.quotePlus(sSearchText), '1'), oGui, sSearchText)

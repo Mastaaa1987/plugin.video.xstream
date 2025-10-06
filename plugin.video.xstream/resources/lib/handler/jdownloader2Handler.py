@@ -5,11 +5,10 @@ import re
 
 from resources.lib.config import cConfig
 from resources.lib.gui.gui import cGui
-from xbmc import LOGINFO as LOGNOTICE, LOGERROR, LOGWARNING, log, executebuiltin, getCondVisibility, getInfoLabel
+from xbmc import LOGINFO as LOGNOTICE, log
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode
 
-LOGMESSAGE = cConfig().getLocalizedString(30166)
 class cJDownloader2Handler:
     def sendToJDownloader2(self, sUrl):
         if self.__checkConfig() is False:
@@ -38,7 +37,7 @@ class cJDownloader2Handler:
         return urlopen(request).read().decode(ENCODING).strip()
 
     def __download(self, sFileUrl):
-        log(LOGMESSAGE + ' -> [jdownloader2Handler]: JD2 Link: ' + str(sFileUrl), LOGNOTICE)
+        log(cConfig().getLocalizedString(30166) + ' -> [jdownloader2Handler]: JD2 Link: ' + str(sFileUrl), LOGNOTICE)
         params = {'passwords': 'myPassword', 'source': 'http://jdownloader.org/spielwiese', 'urls': sFileUrl, 'submit': 'Add Link to JDownloader', }
         if self.__client('flash/add', params).lower() == 'success':
             return True
@@ -46,7 +45,7 @@ class cJDownloader2Handler:
             return False
 
     def __checkConfig(self):
-        log(LOGMESSAGE + ' -> [jdownloader2Handler]: check JD2 Addon settings', LOGNOTICE)
+        log(cConfig().getLocalizedString(30166) + ' -> [jdownloader2Handler]: check JD2 Addon settings', LOGNOTICE)
         bEnabled = cConfig().getSetting('jd2_enabled')
         if bEnabled == 'true':
             return True
@@ -59,7 +58,7 @@ class cJDownloader2Handler:
         return cConfig().getSetting('jd2_port')
 
     def __checkConnection(self):
-        log(LOGMESSAGE + ' -> [jdownloader2Handler]: check JD2 Connection', LOGNOTICE)
+        log(cConfig().getLocalizedString(30166) + ' -> [jdownloader2Handler]: check JD2 Connection', LOGNOTICE)
         try:
             output = self.__client('jdcheck.js', None)
             pattern = re.compile(r'jdownloader\s*=\s*true', re.IGNORECASE)

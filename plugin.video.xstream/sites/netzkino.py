@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 # Python 3
 # Always pay attention to the translations in the menu!
-# HTML LangzeitCache hinzugef\xc3\x83\xc2\xbcgt
-# showEntries: 6 Stunden
+# HTML LangzeitCache hinzugefügt
+# showEntries:      6 Stunden
 # showEntriesUnJson:6 Stunden
+
 
 import json
 
 from resources.lib.handler.ParameterHandler import ParameterHandler
 from resources.lib.handler.requestHandler import cRequestHandler
-from resources.lib.tools import logger, cParser, validater
+from resources.lib.tools import logger, cParser
 from resources.lib.gui.guiElement import cGuiElement
 from resources.lib.config import cConfig
 from resources.lib.gui.gui import cGui
@@ -20,11 +21,11 @@ SITE_ICON = 'netzkino.png'
 
 # Global search function is thus deactivated!
 if cConfig().getSetting('global_search_' + SITE_IDENTIFIER) == 'false':
- SITE_GLOBAL_SEARCH = False
- logger.info('-> [SitePlugin]: globalSearch for %s is deactivated.' % SITE_NAME)
+    SITE_GLOBAL_SEARCH = False
+    logger.info('-> [SitePlugin]: globalSearch for %s is deactivated.' % SITE_NAME)
 
 # Domain Abfrage
-DOMAIN = cConfig().getSetting('plugin_' + SITE_IDENTIFIER + '.domain', 'www.netzkino.de') # Domain Auswahl \xc3\x83\xc2\xbcber die xStream Einstellungen m\xc3\x83\xc2\xb6glich
+DOMAIN = cConfig().getSetting('plugin_' + SITE_IDENTIFIER + '.domain', 'www.netzkino.de') # Domain Auswahl über die xStream Einstellungen möglich
 STATUS = cConfig().getSetting('plugin_' + SITE_IDENTIFIER + '_status') # Status Code Abfrage der Domain
 ACTIVE = cConfig().getSetting('plugin_' + SITE_IDENTIFIER) # Ob Plugin aktiviert ist oder nicht
 
@@ -32,20 +33,17 @@ URL_MAIN = 'https://api.netzkino.de.simplecache.net/capi-2.0a/categories/%s.json
 URL_SEARCH = 'https://api.netzkino.de.simplecache.net/capi-2.0a/search?q=%s&d=www&l=de-DE'
 URL_START = 'https://' + DOMAIN + '/category/%s'
 
-try:
-    validater()
-except:
-    sys.exit()
+#
 
 def load(): # Menu structure of the site plugin
     logger.info('Load %s' % SITE_NAME)
     oGui = cGui()
     params = ParameterHandler()
-    cGui().addFolder(cGuiElement('Startseite', SITE_IDENTIFIER, 'showStart'), params) # Startseite
+    cGui().addFolder(cGuiElement('Startseite', SITE_IDENTIFIER, 'showStart'), params)  # Startseite
     oGui.addFolder(cGuiElement('Genres', SITE_IDENTIFIER, 'showGenreMenu'))
     params.setParam('sUrl', URL_START % 'themenkino-genre')
     oGui.addFolder(cGuiElement('Themenkino', SITE_IDENTIFIER, 'showEntriesUnJson'), params)
-    oGui.addFolder(cGuiElement('Suche', SITE_IDENTIFIER, 'showSearch'))
+    oGui.addFolder(cGuiElement('Suche', SITE_IDENTIFIER, 'showSearch'), params)
     oGui.setEndOfDirectory()
 
 
@@ -73,7 +71,7 @@ def showStart():
     params.setParam('sUrl', URL_START % 'Thriller-frontpage')
     cGui().addFolder(cGuiElement('Thriller', SITE_IDENTIFIER, 'showEntriesUnJson'), params)
     params.setParam('sUrl', URL_MAIN % 'komodien-frontpage')
-    cGui().addFolder(cGuiElement('Kom\xc3\x83\xc2\xb6dien', SITE_IDENTIFIER, 'showEntries'), params)
+    cGui().addFolder(cGuiElement('Komödien', SITE_IDENTIFIER, 'showEntries'), params)
     params.setParam('sUrl', URL_START % 'Zombiefilme-frontpage')
     cGui().addFolder(cGuiElement('Zombiefilme', SITE_IDENTIFIER, 'showEntriesUnJson'), params)
     params.setParam('sUrl', URL_START % 'Hollywood-Filme-frontpage')
@@ -83,7 +81,7 @@ def showStart():
     params.setParam('sUrl', URL_MAIN % 'mockbuster-frontpage')
     cGui().addFolder(cGuiElement('Mockbuster', SITE_IDENTIFIER, 'showEntries'), params)
     params.setParam('sUrl', URL_MAIN % 'frontpage-exklusiv-frontpage')
-    cGui().addFolder(cGuiElement('Die sch\xc3\x83\xc2\xb6nsten M\xc3\x83\xc2\xa4rchen', SITE_IDENTIFIER, 'showEntries'), params)
+    cGui().addFolder(cGuiElement('Die schönsten Märchen', SITE_IDENTIFIER, 'showEntries'), params)
     params.setParam('sUrl', URL_MAIN % 'empfehlungen_woche-frontpage')
     cGui().addFolder(cGuiElement('Unsere Empfehlungen der Woche', SITE_IDENTIFIER, 'showEntries'), params)
     params.setParam('sUrl', URL_MAIN % 'filme_mit_auszeichnungen-frontpage')
@@ -153,8 +151,8 @@ def showEntries(entryUrl=False, sGui=False, sSearchText=False):
     oRequest = cRequestHandler(entryUrl, ignoreErrors=sGui is not False)
     if cConfig().getSetting('global_search_' + SITE_IDENTIFIER) == 'true':
         oRequest.cacheTime = 60 * 60 * 6  # 6 Stunden
-        jSearch = json.loads(oRequest.request()) # Lade JSON aus dem Request der URL
-    if not jSearch: return # # Wenn Suche erfolglos - Abbruch
+    jSearch = json.loads(oRequest.request())  # Lade JSON aus dem Request der URL
+    if not jSearch: return  # # Wenn Suche erfolglos - Abbruch
 
     if 'posts' not in jSearch or len(jSearch['posts']) == 0:
         if not sGui: oGui.showInfo()
@@ -163,19 +161,19 @@ def showEntries(entryUrl=False, sGui=False, sSearchText=False):
     total = len(jSearch['posts'])
     for item in jSearch['posts']:
         try:
-            if sSearchText and not cParser().search(sSearchText, item['title']):
+            if sSearchText and not cParser.search(sSearchText, item['title']):
                 continue
-            oGuiElement = cGuiElement(item['title'], SITE_IDENTIFIER, 'showHosters')
-            oGuiElement.setThumbnail(item['thumbnail'])
-            oGuiElement.setDescription(item['content'])
-            oGuiElement.setFanart(item['custom_fields']['featured_img_all'][0])
-            oGuiElement.setYear(item['custom_fields']['Jahr'][0])
-            oGuiElement.setQuality(item['custom_fields']['Adaptives_Streaming'][0])
+            oGuiElement = cGuiElement(str(item['title']), SITE_IDENTIFIER, 'showHosters')
+            oGuiElement.setThumbnail(str(item['thumbnail']))
+            oGuiElement.setDescription(str(item['content']))
+            oGuiElement.setFanart(str(item['custom_fields']['featured_img_all'][0]))
+            oGuiElement.setYear(str(item['custom_fields']['Jahr'][0]))
+            oGuiElement.setQuality(str(item['custom_fields']['Adaptives_Streaming'][0]))
             oGuiElement.setMediaType('movie')
             if 'Duration' in item['custom_fields'] and item['custom_fields']['Duration'][0]:
                 oGuiElement.addItemValue('duration', item['custom_fields']['Duration'][0])
             urls = ''
-            if 'Streaming' in item['custom_fields'] and item['custom_fields']['Streaming'][0]:
+            if 'Streaming' in item['custom_fields'] and item['custom_fields']['Streaming'][0]:                                  
                 urls += 'https://pmd.netzkino-seite.netzkino.de/%s.mp4' % item['custom_fields']['Streaming'][0]
             if 'Youtube_Delivery_Id' in item['custom_fields'] and item['custom_fields']['Youtube_Delivery_Id'][0]:
                 urls += '#' + 'plugin://plugin.video.youtube/play/?video_id=%s' % item['custom_fields']['Youtube_Delivery_Id'][0]
@@ -186,7 +184,7 @@ def showEntries(entryUrl=False, sGui=False, sSearchText=False):
 
     if not sGui:
         oGui.setView('movies')
-    oGui.setEndOfDirectory()
+        oGui.setEndOfDirectory()
 
 
 def showEntriesUnJson(entryUrl=False, sGui=False, sSearchText=False):
@@ -198,11 +196,11 @@ def showEntriesUnJson(entryUrl=False, sGui=False, sSearchText=False):
         oRequest.cacheTime = 60 * 60 * 6  # 6 Stunden
     sHtmlContent = oRequest.request()
     #Aufbau pattern
-    #'item":.*?' # Container Start
-    #'image.*?(https[^"]+).*?' # Image
-    #'name":\s.*?([^"]+).*?' # Name
-    #'url":\s.*?([^"]+).*?' # URL
-    #'(.*?)}' # Dummy
+    #'item":.*?'  # Container Start
+    #'image.*?(https[^"]+).*?'  # Image
+    #'name":\s.*?([^"]+).*?'  # Name
+    #'url":\s.*?([^"]+).*?'  # URL
+    #'(.*?)}'  # Dummy
     pattern = 'item":.*?image.*?(https[^"]+).*?name":\s.*?([^"]+).*?url":\s.*?([^"]+).*?(.*?)}'
     isMatch, aResult = cParser.parse(sHtmlContent, pattern)
 
@@ -213,10 +211,10 @@ def showEntriesUnJson(entryUrl=False, sGui=False, sSearchText=False):
     total = len(aResult)
     for sThumbnail, sName, sUrl, sDummy in aResult:
         try:
-            if sSearchText and not cParser().search(sSearchText, sName):
+            if sSearchText and not cParser.search(sSearchText, sName):
                 continue
-            isDuration, sDurationH = cParser.parseSingleResult(sDummy, 'duration":\s"([\d]+).*?') # Laufzeit Stunden
-            isDuration, sDurationM = cParser.parseSingleResult(sDummy, 'H([\d]+).*?') # Laufzeit Minuten
+            isDuration, sDurationH = cParser.parseSingleResult(sDummy, 'duration":\s"([\d]+).*?')  # Laufzeit Stunden
+            isDuration, sDurationM = cParser.parseSingleResult(sDummy, 'H([\d]+).*?')  # Laufzeit Minuten
             oGuiElement = cGuiElement(sName, SITE_IDENTIFIER, 'showHostersUnJson')
             oGuiElement.setThumbnail(sThumbnail)
             if isDuration:
@@ -230,7 +228,7 @@ def showEntriesUnJson(entryUrl=False, sGui=False, sSearchText=False):
             continue
     if not sGui:
         oGui.setView('movies')
-    oGui.setEndOfDirectory()
+        oGui.setEndOfDirectory()
 
 
 def showHosters():
@@ -241,13 +239,13 @@ def showHosters():
         hosters.append(hoster)
     if hosters:
         hosters.append('getHosterUrl')
-        return hosters
+    return hosters
 
 
 def showHostersUnJson():
     hosters = []
     sHtmlContent = cRequestHandler(ParameterHandler().getValue('entryUrl')).request()
-    isMatch, aResult = cParser().parse(sHtmlContent, 'pmdUrl":"([^"]+)')
+    isMatch, aResult = cParser.parse(sHtmlContent, 'pmdUrl":"([^"]+)')
     if isMatch:
         for sUrl in aResult:
             sName = 'Netzkino'
@@ -256,7 +254,7 @@ def showHostersUnJson():
             hosters.append(hoster)
     if hosters:
         hosters.append('getHosterUrl')
-        return hosters
+    return hosters
 
 
 def getHosterUrl(sUrl=False):
@@ -264,12 +262,11 @@ def getHosterUrl(sUrl=False):
 
 
 def showSearch():
-    sSearchText = cGui().showKeyBoard()
+    sSearchText = cGui().showKeyBoard(sHeading=cConfig().getLocalizedString(30287))
     if not sSearchText: return
     _search(False, sSearchText)
     cGui().setEndOfDirectory()
 
 
 def _search(oGui, sSearchText):
-    showEntries(URL_SEARCH % cParser().quotePlus(sSearchText), oGui, sSearchText)
-
+    showEntries(URL_SEARCH % cParser.quotePlus(sSearchText), oGui, sSearchText)
